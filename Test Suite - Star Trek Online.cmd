@@ -6,8 +6,6 @@ echo "Running test suite - STO Server test"
 :: This will get system info, if you want. Just remember to delete the Host Name, and the Product ID.
 :start
 	ECHO.
-	ECHO 1. Print System Info
-	ECHO 2. Print Skip
 		set choice=
 		set /p choice=Do you want to get system info? (y/n)
 		if not '%choice%'=='' set choice=%choice:~0,1%
@@ -26,6 +24,26 @@ echo "Running test suite - STO Server test"
 	echo Skipping System Info
 	goto end
 :end
+:: This will run the Dxdiag command, if you need it.
+:start
+	ECHO.
+		set choice=
+		set /p choice=Do you want to get Dxdiag? (y/n)
+		if not '%choice%'=='' set choice=%choice:~0,1%
+		if '%choice%'=='y' goto Dxdiag
+		if '%choice%'=='n' goto Skip
+		ECHO "%choice%" is not valid, try again
+		ECHO.
+	goto start
+	:Dxdiag
+	echo Getting Dxdiag..........
+	start Dxdiag
+	echo Complete
+	goto end
+	:Skip
+	echo Skipping Dxdiag.
+	goto end
+:end
 :: This will flush the DNS cache before testing the connection.
 echo Flushing DNS......
 @echo off
@@ -37,11 +55,12 @@ ipconfig /flushdns
 echo Completed
 :: This will ping test the STO servers, based on your choice. 
 echo Perfoming Ping test of the Star Trek Online Servers
+Echo Getting Baseline.......
+ping google.ca > baseling.txt
+start notepad baseline.txt
+echo Finished
 :start
 	ECHO.
-	ECHO 1. ping patchserver.crypticstudios.com
-	ECHO 2. ping patchserver.crypticstudios.com -n 8
-	ECHO 3. ping patchserver.crypticstudios.com -n 50
 		set choice=
 		set /p choice=Type the number to run the command. 1 will run a normal ping test (4 times), 2 will run it 8 times, and 3 will run it 50 times.
 		if not '%choice%'=='' set choice=%choice:~0,1%
